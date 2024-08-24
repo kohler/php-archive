@@ -25,6 +25,7 @@ class FileInfo
     protected $uid = 0;
     protected $gid = 0;
     protected $comment = '';
+    protected $data;
 
     /**
      * initialize dynamic defaults
@@ -353,6 +354,14 @@ class FileInfo
         }
 
         return $extract;
+    }
+
+    public function getData() {
+        return $this->data;
+    }
+
+    public function setData($data) {
+        $this->data = $data;
     }
 }
 

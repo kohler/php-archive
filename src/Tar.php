@@ -127,6 +127,36 @@ class Tar extends Archive
     }
 
     /**
+     * Read the contents of a TAR archive and return each entry using yield
+     * for memory efficiency.
+     *
+     * @see contents()
+     * @throws ArchiveIOException
+     * @throws ArchiveCorruptedException
+     * @returns FileInfo[]
+     */
+    public function yieldContentsWithData()
+    {
+        if ($this->closed || !$this->file) {
+            throw new ArchiveIOException('Can not read from a closed archive');
+        }
+
+        while ($read = $this->readbytes(512)) {
+            $header = $this->parseHeader($read);
+            if (!is_array($header)) {
+                continue;
+            }
+
+            $finfo = $this->header2fileinfo($header);
+            $size = $header["size"];
+            $finfo->setData(substr($this->readbytes(ceil($size / 512) * 512), 0, $size));
+            yield $finfo;
+        }
+
+        $this->close();
+    }
+
+    /**
      * Extract an existing TAR archive
      *
      * The $strip parameter allows you to strip a certain number of path components from the filenames
