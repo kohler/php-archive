@@ -148,8 +148,12 @@ class Tar extends Archive
             }
 
             $finfo = $this->header2fileinfo($header);
-            $size = $header["size"];
-            $finfo->setData(substr($this->readbytes(ceil($size / 512) * 512), 0, $size));
+            $size = $header['size'];
+            if ($size === 0) {
+                $finfo->setData("");
+            } else {
+                $finfo->setData(substr($this->readbytes(ceil($size / 512) * 512), 0, $size));
+            }
             yield $finfo;
         }
 
